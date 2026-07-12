@@ -69,13 +69,10 @@ fun TicTacToeScreen(modifier: Modifier) {
     val moves =
         remember { mutableStateListOf(true, null, false, null, true, false, null, null, null) }
 
-    val onTap: (Offset) -> Unit = {
-        if(playerTurn.value) {
-            val x = (it.x / 333).toInt()
-            val y = (it.y / 333).toInt()
+    val onTap: (Int, Int) -> Unit = { x, y ->
+        if (playerTurn.value) {
             val positionInMoves = y * 3 + x
-
-            if(moves[positionInMoves] == null) {
+            if (positionInMoves in moves.indices && moves[positionInMoves] == null) {
                 moves[positionInMoves] = true
                 playerTurn.value = false
             }
@@ -125,14 +122,20 @@ fun Header(playerTurn: Boolean) {
 }
 
 @Composable
-fun Board(moves: List<Boolean?>, onTap: (Offset) -> Unit) {
+fun Board(moves: List<Boolean?>, onTap: (Int, Int) -> Unit) {
     Box(
         modifier = Modifier
             .aspectRatio(1f)
             .padding(32.dp)
             .background(Color.LightGray)
             .pointerInput(Unit) {
-                detectTapGestures(onTap = onTap)
+                detectTapGestures(onTap = { offset ->
+                    val cellWidth = size.width / 3f
+                    val cellHeight = size.height / 3f
+                    val x = (offset.x / cellWidth).toInt().coerceIn(0, 2)
+                    val y = (offset.y / cellHeight).toInt().coerceIn(0, 2)
+                    onTap(x, y)
+                })
             }
     ) {
         Column(
