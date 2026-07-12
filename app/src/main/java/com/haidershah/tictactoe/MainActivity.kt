@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.haidershah.tictactoe.ui.theme.TicTacToeTheme
 
 class MainActivity : ComponentActivity() {
@@ -56,14 +58,17 @@ fun TicTacToeScreen(modifier: Modifier) {
     val moves =
         remember { mutableStateListOf(true, null, false, null, true, false, null, null, null) }
 
-    Header(playerTurn.value, modifier)
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = "Tic Tac Toe", fontSize = 30.sp, modifier = Modifier.padding(16.dp))
+        Header(playerTurn.value)
 //    Board(moves)
+    }
 }
 
 @Composable
-fun Header(playerTurn: Boolean, modifier: Modifier = Modifier) {
+fun Header(playerTurn: Boolean) {
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         val playerBoxColor = if (playerTurn) Color.Cyan else Color.LightGray
