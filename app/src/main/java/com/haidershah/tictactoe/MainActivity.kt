@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,7 +26,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.haidershah.tictactoe.ui.theme.TicTacToeTheme
@@ -146,5 +150,44 @@ fun Board(moves: List<Boolean?>) {
                     .background(Color.Black)
             ) { }
         }
+        Column(modifier = Modifier.fillMaxSize()) {
+            for (i in 0..2) {
+                Row(modifier = Modifier.weight(1f)) {
+                    for (j in 0..2) {
+                        val index = i * 3 + j
+                        val move = moves[index]
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            getComposableFromMove(move)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun getComposableFromMove(move: Boolean?) {
+    when (move) {
+        true -> Image(
+            painter = painterResource(R.drawable.ic_x),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            colorFilter = ColorFilter.tint(Color.Blue)
+        )
+
+        false -> Image(
+            painter = painterResource(R.drawable.ic_o),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            colorFilter = ColorFilter.tint(Color.Red)
+        )
+
+        null -> Image(
+            painter = painterResource(R.drawable.ic_null),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
