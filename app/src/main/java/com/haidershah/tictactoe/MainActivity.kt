@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,8 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -66,10 +69,23 @@ fun TicTacToeScreen(modifier: Modifier) {
     val moves =
         remember { mutableStateListOf(true, null, false, null, true, false, null, null, null) }
 
+    val onTap: (Offset) -> Unit = {
+        if(playerTurn.value) {
+            val x = (it.x / 333).toInt()
+            val y = (it.y / 333).toInt()
+            val positionInMoves = y * 3 + x
+
+            if(moves[positionInMoves] == null) {
+                moves[positionInMoves] = true
+                playerTurn.value = false
+            }
+        }
+    }
+
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(text = "Tic Tac Toe", fontSize = 30.sp, modifier = Modifier.padding(16.dp))
         Header(playerTurn.value)
-        Board(moves)
+        Board(moves, onTap)
     }
 }
 
@@ -79,7 +95,7 @@ fun Header(playerTurn: Boolean) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        val playerBoxColor = if (playerTurn) Color.Cyan else Color.LightGray
+        val playerBoxColor = if (playerTurn) Color.Blue else Color.LightGray
         val computerBoxColor = if (playerTurn) Color.LightGray else Color.Red
 
         Box(
@@ -109,12 +125,15 @@ fun Header(playerTurn: Boolean) {
 }
 
 @Composable
-fun Board(moves: List<Boolean?>) {
+fun Board(moves: List<Boolean?>, onTap: (Offset) -> Unit) {
     Box(
         modifier = Modifier
             .aspectRatio(1f)
             .padding(32.dp)
             .background(Color.LightGray)
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = onTap)
+            }
     ) {
         Column(
             verticalArrangement = Arrangement.SpaceEvenly,
