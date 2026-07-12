@@ -19,12 +19,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -36,6 +39,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.haidershah.tictactoe.ui.theme.TicTacToeTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,6 +90,26 @@ fun TicTacToeScreen(modifier: Modifier) {
         Text(text = "Tic Tac Toe", fontSize = 30.sp, modifier = Modifier.padding(16.dp))
         Header(playerTurn.value)
         Board(moves, onTap)
+
+        // computer's turn
+        if (!playerTurn.value) {
+            CircularProgressIndicator(color = Color.Red, modifier = Modifier.padding(16.dp))
+
+            val coroutineScope = rememberCoroutineScope()
+            LaunchedEffect(key1 = Unit) {
+                coroutineScope.launch {
+                    delay(1500.milliseconds)
+                    while(true) {
+                        val index = Random.nextInt(9)
+                        if(moves[index] == null) {
+                            moves[index] = false
+                            playerTurn.value = true
+                            break
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -180,7 +207,7 @@ fun Board(moves: List<Boolean?>, onTap: (Int, Int) -> Unit) {
                         val move = moves[index]
 
                         Column(modifier = Modifier.weight(1f)) {
-                            getComposableFromMove(move)
+                            GetComposableFromMove(move)
                         }
                     }
                 }
@@ -190,7 +217,7 @@ fun Board(moves: List<Boolean?>, onTap: (Int, Int) -> Unit) {
 }
 
 @Composable
-fun getComposableFromMove(move: Boolean?) {
+fun GetComposableFromMove(move: Boolean?) {
     when (move) {
         true -> Image(
             painter = painterResource(R.drawable.ic_x),
