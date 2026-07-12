@@ -99,9 +99,9 @@ fun TicTacToeScreen(modifier: Modifier) {
             LaunchedEffect(key1 = Unit) {
                 coroutineScope.launch {
                     delay(1500.milliseconds)
-                    while(true) {
+                    while (true) {
                         val index = Random.nextInt(9)
-                        if(moves[index] == null) {
+                        if (moves[index] == null) {
                             moves[index] = false
                             playerTurn.value = true
                             break
@@ -122,13 +122,16 @@ fun Header(playerTurn: Boolean) {
         val playerBoxColor = if (playerTurn) Color.Blue else Color.LightGray
         val computerBoxColor = if (playerTurn) Color.LightGray else Color.Red
 
+        val playerFontColor = if(playerTurn) Color.White else Color.Black
+
         Box(
             modifier = Modifier
                 .width(100.dp)
                 .background(playerBoxColor)
         ) {
             Text(
-                text = "Player", modifier = Modifier
+                text = "Player",
+                color = playerFontColor, modifier = Modifier
                     .padding(8.dp)
                     .align(Alignment.Center)
             )
