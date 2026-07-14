@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -30,8 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -45,11 +42,11 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
-// todo change to GameState
-enum class Win {
-    PLAYER,
-    COMPUTER,
-    DRAW
+enum class GameState {
+    IN_PROGRESS,
+    PLAYER_WON,
+    COMPUTER_WON,
+    DRAW,
 }
 
 class MainActivity : ComponentActivity() {
@@ -84,16 +81,16 @@ fun TicTacToeScreen(modifier: Modifier) {
     val moves =
         remember { mutableStateListOf(true, null, false, null, true, false, null, null, null) }
 
-    val win = remember { mutableStateOf<Win?>(null) }
+    val gameState = remember { mutableStateOf(GameState.IN_PROGRESS) }
 
     val onTap: (Int, Int) -> Unit = { x, y ->
-        // player's turn // todo change
-        if (playerTurn.value && win.value == null) {
+        // player's turn and game is in-progress
+        if (playerTurn.value && gameState.value == GameState.IN_PROGRESS) {
             val positionInMoves = y * 3 + x
             if (positionInMoves in moves.indices && moves[positionInMoves] == null) {
                 moves[positionInMoves] = true
                 playerTurn.value = false
-                win.value = checkEndGame(moves)
+                gameState.value = getGameState(moves)
             }
         }
     }
@@ -107,8 +104,8 @@ fun TicTacToeScreen(modifier: Modifier) {
         Header(playerTurn.value)
         Board(moves, onTap)
 
-        // computer's turn todo change win.value
-        if (!playerTurn.value && win.value == null) {
+        // computer's turn and game is in-progress
+        if (!playerTurn.value && gameState.value == GameState.IN_PROGRESS) {
             CircularProgressIndicator(color = Color.Red, modifier = Modifier.padding(16.dp))
 
             val coroutineScope = rememberCoroutineScope()
@@ -120,7 +117,7 @@ fun TicTacToeScreen(modifier: Modifier) {
                         if (moves[index] == null) {
                             moves[index] = false
                             playerTurn.value = true
-                            win.value = checkEndGame(moves)
+                            gameState.value = getGameState(moves)
                             break
                         }
                     }
@@ -128,31 +125,26 @@ fun TicTacToeScreen(modifier: Modifier) {
             }
         }
 
-        // game finished
-        if (win.value != null) {
-            when (win.value) {
-                Win.PLAYER -> Text(
-                    text = stringResource(R.string.message_player_won),
-                    fontSize = 25.sp
-                )
+        when (gameState.value) {
+            GameState.PLAYER_WON -> Text(
+                text = stringResource(R.string.message_player_won),
+                fontSize = 25.sp
+            )
 
-                Win.COMPUTER -> Text(
-                    text = stringResource(R.string.message_computer_won),
-                    fontSize = 30.sp
-                )
+            GameState.COMPUTER_WON -> Text(
+                text = stringResource(R.string.message_computer_won),
+                fontSize = 30.sp
+            )
 
-                Win.DRAW -> Text(text = stringResource(R.string.message_draw), fontSize = 30.sp)
-                else -> {}
-            }
+            GameState.DRAW -> Text(text = stringResource(R.string.message_draw), fontSize = 30.sp)
+
+            GameState.IN_PROGRESS -> {}
         }
     }
-
 }
 
-// todo change name
-fun checkEndGame(moves: List<Boolean?>): Win? {
-    var win: Win? = null
-    if ((moves[0] == true && moves[1] == true && moves[2] == true) ||
+fun getGameState(moves: List<Boolean?>): GameState {
+    return if ((moves[0] == true && moves[1] == true && moves[2] == true) ||
         (moves[3] == true && moves[4] == true && moves[5] == true) ||
         (moves[6] == true && moves[7] == true && moves[8] == true) ||
         (moves[0] == true && moves[3] == true && moves[6] == true) ||
@@ -161,7 +153,7 @@ fun checkEndGame(moves: List<Boolean?>): Win? {
         (moves[0] == true && moves[4] == true && moves[8] == true) ||
         (moves[6] == true && moves[4] == true && moves[2] == true)
     ) {
-        win = Win.PLAYER
+        GameState.PLAYER_WON
     } else if ((moves[0] == false && moves[1] == false && moves[2] == false) ||
         (moves[3] == false && moves[4] == false && moves[5] == false) ||
         (moves[6] == false && moves[7] == false && moves[8] == false) ||
@@ -171,7 +163,7 @@ fun checkEndGame(moves: List<Boolean?>): Win? {
         (moves[0] == false && moves[4] == false && moves[8] == false) ||
         (moves[6] == false && moves[4] == false && moves[2] == false)
     ) {
-        win = Win.COMPUTER
+        GameState.COMPUTER_WON
     } else {
         var isMoveAvailable = false
         for (i in 0..8) {
@@ -180,12 +172,12 @@ fun checkEndGame(moves: List<Boolean?>): Win? {
                 break
             }
         }
-        if (!isMoveAvailable) {
-            win = Win.DRAW
+        if (isMoveAvailable) {
+            GameState.IN_PROGRESS
+        } else {
+            GameState.DRAW
         }
     }
-
-    return win
 }
 
 @Composable
