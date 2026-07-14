@@ -47,6 +47,12 @@ enum class Turn {
     COMPUTER
 }
 
+enum class Move {
+    PLAYER,
+    COMPUTER,
+    NO_MOVE
+}
+
 enum class GameState {
     IN_PROGRESS,
     PLAYER_WON,
@@ -74,13 +80,20 @@ class MainActivity : ComponentActivity() {
 fun TicTacToeScreen(modifier: Modifier) {
     val turn = remember { mutableStateOf(Turn.PLAYER) }
 
-    /**
-     * true - player move
-     * false - computer move
-     * null - no move
-     */
     val moves =
-        remember { mutableStateListOf(true, null, false, null, true, false, null, null, null) }
+        remember {
+            mutableStateListOf(
+                Move.PLAYER,
+                Move.NO_MOVE,
+                Move.COMPUTER,
+                Move.NO_MOVE,
+                Move.PLAYER,
+                Move.COMPUTER,
+                Move.NO_MOVE,
+                Move.NO_MOVE,
+                Move.NO_MOVE
+            )
+        }
 
     val gameState = remember { mutableStateOf(GameState.IN_PROGRESS) }
 
@@ -88,8 +101,8 @@ fun TicTacToeScreen(modifier: Modifier) {
         // player's turn and game is in-progress
         if (turn.value == Turn.PLAYER && gameState.value == GameState.IN_PROGRESS) {
             val positionInMoves = y * 3 + x
-            if (positionInMoves in moves.indices && moves[positionInMoves] == null) {
-                moves[positionInMoves] = true
+            if (positionInMoves in moves.indices && moves[positionInMoves] == Move.NO_MOVE) {
+                moves[positionInMoves] = Move.PLAYER
                 turn.value = Turn.COMPUTER
                 gameState.value = getGameState(moves)
             }
@@ -115,8 +128,8 @@ fun TicTacToeScreen(modifier: Modifier) {
                     delay(1500.milliseconds)
                     while (true) {
                         val index = Random.nextInt(9)
-                        if (moves[index] == null) {
-                            moves[index] = false
+                        if (moves[index] == Move.NO_MOVE) {
+                            moves[index] = Move.COMPUTER
                             turn.value = Turn.PLAYER
                             gameState.value = getGameState(moves)
                             break
@@ -144,31 +157,31 @@ fun TicTacToeScreen(modifier: Modifier) {
     }
 }
 
-fun getGameState(moves: List<Boolean?>): GameState {
-    return if ((moves[0] == true && moves[1] == true && moves[2] == true) ||
-        (moves[3] == true && moves[4] == true && moves[5] == true) ||
-        (moves[6] == true && moves[7] == true && moves[8] == true) ||
-        (moves[0] == true && moves[3] == true && moves[6] == true) ||
-        (moves[1] == true && moves[4] == true && moves[7] == true) ||
-        (moves[2] == true && moves[5] == true && moves[8] == true) ||
-        (moves[0] == true && moves[4] == true && moves[8] == true) ||
-        (moves[6] == true && moves[4] == true && moves[2] == true)
+fun getGameState(moves: List<Move>): GameState {
+    return if ((moves[0] == Move.PLAYER && moves[1] == Move.PLAYER && moves[2] == Move.PLAYER) ||
+        (moves[3] == Move.PLAYER && moves[4] == Move.PLAYER && moves[5] == Move.PLAYER) ||
+        (moves[6] == Move.PLAYER && moves[7] == Move.PLAYER && moves[8] == Move.PLAYER) ||
+        (moves[0] == Move.PLAYER && moves[3] == Move.PLAYER && moves[6] == Move.PLAYER) ||
+        (moves[1] == Move.PLAYER && moves[4] == Move.PLAYER && moves[7] == Move.PLAYER) ||
+        (moves[2] == Move.PLAYER && moves[5] == Move.PLAYER && moves[8] == Move.PLAYER) ||
+        (moves[0] == Move.PLAYER && moves[4] == Move.PLAYER && moves[8] == Move.PLAYER) ||
+        (moves[6] == Move.PLAYER && moves[4] == Move.PLAYER && moves[2] == Move.PLAYER)
     ) {
         GameState.PLAYER_WON
-    } else if ((moves[0] == false && moves[1] == false && moves[2] == false) ||
-        (moves[3] == false && moves[4] == false && moves[5] == false) ||
-        (moves[6] == false && moves[7] == false && moves[8] == false) ||
-        (moves[0] == false && moves[3] == false && moves[6] == false) ||
-        (moves[1] == false && moves[4] == false && moves[7] == false) ||
-        (moves[2] == false && moves[5] == false && moves[8] == false) ||
-        (moves[0] == false && moves[4] == false && moves[8] == false) ||
-        (moves[6] == false && moves[4] == false && moves[2] == false)
+    } else if ((moves[0] == Move.COMPUTER && moves[1] == Move.COMPUTER && moves[2] == Move.COMPUTER) ||
+        (moves[3] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[5] == Move.COMPUTER) ||
+        (moves[6] == Move.COMPUTER && moves[7] == Move.COMPUTER && moves[8] == Move.COMPUTER) ||
+        (moves[0] == Move.COMPUTER && moves[3] == Move.COMPUTER && moves[6] == Move.COMPUTER) ||
+        (moves[1] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[7] == Move.COMPUTER) ||
+        (moves[2] == Move.COMPUTER && moves[5] == Move.COMPUTER && moves[8] == Move.COMPUTER) ||
+        (moves[0] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[8] == Move.COMPUTER) ||
+        (moves[6] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[2] == Move.COMPUTER)
     ) {
         GameState.COMPUTER_WON
     } else {
         var isMoveAvailable = false
         for (i in 0..8) {
-            if (moves[i] == null) {
+            if (moves[i] == Move.NO_MOVE) {
                 isMoveAvailable = true
                 break
             }
@@ -220,7 +233,7 @@ fun Header(turn: Turn) {
 }
 
 @Composable
-fun Board(moves: List<Boolean?>, onTap: (Int, Int) -> Unit) {
+fun Board(moves: List<Move>, onTap: (Int, Int) -> Unit) {
     Box(
         modifier = Modifier
             .aspectRatio(1f)
@@ -288,23 +301,23 @@ fun Board(moves: List<Boolean?>, onTap: (Int, Int) -> Unit) {
 }
 
 @Composable
-fun GetComposableFromMove(move: Boolean?) {
+fun GetComposableFromMove(move: Move) {
     when (move) {
-        true -> Image(
+        Move.PLAYER -> Image(
             painter = painterResource(R.drawable.ic_x),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             colorFilter = ColorFilter.tint(Color.Blue)
         )
 
-        false -> Image(
+        Move.COMPUTER -> Image(
             painter = painterResource(R.drawable.ic_o),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             colorFilter = ColorFilter.tint(Color.Red)
         )
 
-        null -> Image(
+        Move.NO_MOVE -> Image(
             painter = painterResource(R.drawable.ic_null),
             contentDescription = null,
             modifier = Modifier.fillMaxSize()
