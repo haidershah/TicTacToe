@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.haidershah.tictactoe.ui.theme.TicTacToeTheme
@@ -43,6 +44,13 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
+
+// todo change to GameState
+enum class Win {
+    PLAYER,
+    COMPUTER,
+    DRAW
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,23 +84,31 @@ fun TicTacToeScreen(modifier: Modifier) {
     val moves =
         remember { mutableStateListOf(true, null, false, null, true, false, null, null, null) }
 
+    val win = remember { mutableStateOf<Win?>(null) }
+
     val onTap: (Int, Int) -> Unit = { x, y ->
-        if (playerTurn.value) {
+        // player's turn // todo change
+        if (playerTurn.value && win.value == null) {
             val positionInMoves = y * 3 + x
             if (positionInMoves in moves.indices && moves[positionInMoves] == null) {
                 moves[positionInMoves] = true
                 playerTurn.value = false
+                win.value = checkEndGame(moves)
             }
         }
     }
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = "Tic Tac Toe", fontSize = 30.sp, modifier = Modifier.padding(16.dp))
+        Text(
+            text = stringResource(R.string.title_tic_tac_toe),
+            fontSize = 30.sp,
+            modifier = Modifier.padding(16.dp)
+        )
         Header(playerTurn.value)
         Board(moves, onTap)
 
-        // computer's turn
-        if (!playerTurn.value) {
+        // computer's turn todo change win.value
+        if (!playerTurn.value && win.value == null) {
             CircularProgressIndicator(color = Color.Red, modifier = Modifier.padding(16.dp))
 
             val coroutineScope = rememberCoroutineScope()
@@ -104,13 +120,72 @@ fun TicTacToeScreen(modifier: Modifier) {
                         if (moves[index] == null) {
                             moves[index] = false
                             playerTurn.value = true
+                            win.value = checkEndGame(moves)
                             break
                         }
                     }
                 }
             }
         }
+
+        // game finished
+        if (win.value != null) {
+            when (win.value) {
+                Win.PLAYER -> Text(
+                    text = stringResource(R.string.message_player_won),
+                    fontSize = 25.sp
+                )
+
+                Win.COMPUTER -> Text(
+                    text = stringResource(R.string.message_computer_won),
+                    fontSize = 30.sp
+                )
+
+                Win.DRAW -> Text(text = stringResource(R.string.message_draw), fontSize = 30.sp)
+                else -> {}
+            }
+        }
     }
+
+}
+
+// todo change name
+fun checkEndGame(moves: List<Boolean?>): Win? {
+    var win: Win? = null
+    if ((moves[0] == true && moves[1] == true && moves[2] == true) ||
+        (moves[3] == true && moves[4] == true && moves[5] == true) ||
+        (moves[6] == true && moves[7] == true && moves[8] == true) ||
+        (moves[0] == true && moves[3] == true && moves[6] == true) ||
+        (moves[1] == true && moves[4] == true && moves[7] == true) ||
+        (moves[2] == true && moves[5] == true && moves[8] == true) ||
+        (moves[0] == true && moves[4] == true && moves[8] == true) ||
+        (moves[6] == true && moves[4] == true && moves[2] == true)
+    ) {
+        win = Win.PLAYER
+    } else if ((moves[0] == false && moves[1] == false && moves[2] == false) ||
+        (moves[3] == false && moves[4] == false && moves[5] == false) ||
+        (moves[6] == false && moves[7] == false && moves[8] == false) ||
+        (moves[0] == false && moves[3] == false && moves[6] == false) ||
+        (moves[1] == false && moves[4] == false && moves[7] == false) ||
+        (moves[2] == false && moves[5] == false && moves[8] == false) ||
+        (moves[0] == false && moves[4] == false && moves[8] == false) ||
+        (moves[6] == false && moves[4] == false && moves[2] == false)
+    ) {
+        win = Win.COMPUTER
+    } else {
+        var isMoveAvailable = false
+        for (i in 0..8) {
+            if (moves[i] == null) {
+                isMoveAvailable = true
+                break
+            }
+        }
+        if (!isMoveAvailable) {
+            win = Win.DRAW
+        }
+    }
+
+    return win
 }
 
 @Composable
@@ -122,7 +197,7 @@ fun Header(playerTurn: Boolean) {
         val playerBoxColor = if (playerTurn) Color.Blue else Color.LightGray
         val computerBoxColor = if (playerTurn) Color.LightGray else Color.Red
 
-        val playerFontColor = if(playerTurn) Color.White else Color.Black
+        val playerFontColor = if (playerTurn) Color.White else Color.Black
 
         Box(
             modifier = Modifier

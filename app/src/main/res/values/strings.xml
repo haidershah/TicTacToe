@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">TicTacToe</string>
+    <string name="title_tic_tac_toe">Tic Tac Toe</string>
+    <string name="message_player_won">You won! \uD83C\uDF89</string>
+    <string name="message_computer_won">Computer won! \uD83D\uDDA5\uFE0F</string>
+    <string name="message_draw">It\'s a draw! \uD83E\uDD1D</string>
 </resources>
