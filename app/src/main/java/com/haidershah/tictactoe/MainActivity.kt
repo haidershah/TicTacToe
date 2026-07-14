@@ -42,6 +42,11 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
+enum class Turn {
+    PLAYER,
+    COMPUTER
+}
+
 enum class GameState {
     IN_PROGRESS,
     PLAYER_WON,
@@ -67,11 +72,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TicTacToeScreen(modifier: Modifier) {
-    /**
-     * true - player's turn
-     * false - computer's turn
-     */
-    val playerTurn = remember { mutableStateOf(true) }
+    val turn = remember { mutableStateOf(Turn.PLAYER) }
 
     /**
      * true - player move
@@ -85,11 +86,11 @@ fun TicTacToeScreen(modifier: Modifier) {
 
     val onTap: (Int, Int) -> Unit = { x, y ->
         // player's turn and game is in-progress
-        if (playerTurn.value && gameState.value == GameState.IN_PROGRESS) {
+        if (turn.value == Turn.PLAYER && gameState.value == GameState.IN_PROGRESS) {
             val positionInMoves = y * 3 + x
             if (positionInMoves in moves.indices && moves[positionInMoves] == null) {
                 moves[positionInMoves] = true
-                playerTurn.value = false
+                turn.value = Turn.COMPUTER
                 gameState.value = getGameState(moves)
             }
         }
@@ -101,11 +102,11 @@ fun TicTacToeScreen(modifier: Modifier) {
             fontSize = 30.sp,
             modifier = Modifier.padding(16.dp)
         )
-        Header(playerTurn.value)
+        Header(turn.value)
         Board(moves, onTap)
 
         // computer's turn and game is in-progress
-        if (!playerTurn.value && gameState.value == GameState.IN_PROGRESS) {
+        if (turn.value == Turn.COMPUTER && gameState.value == GameState.IN_PROGRESS) {
             CircularProgressIndicator(color = Color.Red, modifier = Modifier.padding(16.dp))
 
             val coroutineScope = rememberCoroutineScope()
@@ -116,7 +117,7 @@ fun TicTacToeScreen(modifier: Modifier) {
                         val index = Random.nextInt(9)
                         if (moves[index] == null) {
                             moves[index] = false
-                            playerTurn.value = true
+                            turn.value = Turn.PLAYER
                             gameState.value = getGameState(moves)
                             break
                         }
@@ -181,15 +182,15 @@ fun getGameState(moves: List<Boolean?>): GameState {
 }
 
 @Composable
-fun Header(playerTurn: Boolean) {
+fun Header(turn: Turn) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        val playerBoxColor = if (playerTurn) Color.Blue else Color.LightGray
-        val computerBoxColor = if (playerTurn) Color.LightGray else Color.Red
+        val playerBoxColor = if (turn == Turn.PLAYER) Color.Blue else Color.LightGray
+        val computerBoxColor = if (turn == Turn.COMPUTER) Color.Red else Color.LightGray
 
-        val playerFontColor = if (playerTurn) Color.White else Color.Black
+        val playerFontColor = if (turn == Turn.PLAYER) Color.White else Color.Black
 
         Box(
             modifier = Modifier
