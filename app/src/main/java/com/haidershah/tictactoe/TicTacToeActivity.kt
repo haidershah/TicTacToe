@@ -41,24 +41,6 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
-enum class Turn {
-    PLAYER,
-    COMPUTER
-}
-
-enum class Move {
-    PLAYER,
-    COMPUTER,
-    NO_MOVE
-}
-
-enum class GameState {
-    IN_PROGRESS,
-    PLAYER_WON,
-    COMPUTER_WON,
-    DRAW,
-}
-
 class TicTacToeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
