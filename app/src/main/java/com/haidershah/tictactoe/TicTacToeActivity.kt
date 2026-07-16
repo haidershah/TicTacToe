@@ -24,7 +24,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -80,31 +79,15 @@ class TicTacToeActivity : ComponentActivity() {
 
 @Composable
 fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewModel()) {
-    val moves =
-        remember {
-            mutableStateListOf(
-                Move.PLAYER,
-                Move.NO_MOVE,
-                Move.COMPUTER,
-                Move.NO_MOVE,
-                Move.PLAYER,
-                Move.COMPUTER,
-                Move.NO_MOVE,
-                Move.NO_MOVE,
-                Move.NO_MOVE
-            )
-        }
-
     val gameState = remember { mutableStateOf(GameState.IN_PROGRESS) }
 
     val onTap: (Int, Int) -> Unit = { x, y ->
         // player's turn and game is in-progress
         if (viewModel.turn == Turn.PLAYER && gameState.value == GameState.IN_PROGRESS) {
             val positionInMoves = y * 3 + x
-            if (positionInMoves in moves.indices && moves[positionInMoves] == Move.NO_MOVE) {
-                viewModel.playerMakesMove()
-                moves[positionInMoves] = Move.PLAYER
-                gameState.value = getGameState(moves)
+            if (positionInMoves in viewModel.moves.indices && viewModel.moves[positionInMoves] == Move.NO_MOVE) {
+                viewModel.playerMakesMove(positionInMoves)
+                gameState.value = getGameState(viewModel.moves)
             }
         }
     }
@@ -116,7 +99,7 @@ fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewMode
             modifier = Modifier.padding(16.dp)
         )
         Header(viewModel.turn)
-        Board(moves, onTap)
+        Board(viewModel.moves, onTap)
 
         // computer's turn and game is in-progress
         if (viewModel.turn == Turn.COMPUTER && gameState.value == GameState.IN_PROGRESS) {
@@ -128,10 +111,9 @@ fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewMode
                     delay(1500.milliseconds)
                     while (true) {
                         val index = Random.nextInt(9)
-                        if (moves[index] == Move.NO_MOVE) {
-                            viewModel.computerMakesMove()
-                            moves[index] = Move.COMPUTER
-                            gameState.value = getGameState(moves)
+                        if (viewModel.moves[index] == Move.NO_MOVE) {
+                            viewModel.computerMakesMove(index)
+                            gameState.value = getGameState(viewModel.moves)
                             break
                         }
                     }
@@ -160,10 +142,6 @@ fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewMode
             Button(modifier = Modifier.padding(16.dp), onClick = {
                 viewModel.resetGame()
                 gameState.value = GameState.IN_PROGRESS
-                // todo reset board
-                for (i in 0..8) {
-                    moves[i] = Move.NO_MOVE
-                }
             }) {
                 Text(
                     text = stringResource(R.string.button_start_over)
