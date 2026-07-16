@@ -14,12 +14,12 @@ class TicTacToeViewModel : ViewModel() {
     var gameState by mutableStateOf(GameState.IN_PROGRESS)
 
     private val _moves = mutableStateListOf(
-        Move.PLAYER,
         Move.NO_MOVE,
-        Move.COMPUTER,
         Move.NO_MOVE,
-        Move.PLAYER,
-        Move.COMPUTER,
+        Move.NO_MOVE,
+        Move.NO_MOVE,
+        Move.NO_MOVE,
+        Move.NO_MOVE,
         Move.NO_MOVE,
         Move.NO_MOVE,
         Move.NO_MOVE
