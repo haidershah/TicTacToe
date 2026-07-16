@@ -11,6 +11,8 @@ class TicTacToeViewModel : ViewModel() {
     var turn by mutableStateOf(Turn.PLAYER)
         private set
 
+    var gameState by mutableStateOf(GameState.IN_PROGRESS)
+
     private val _moves = mutableStateListOf(
         Move.PLAYER,
         Move.NO_MOVE,
@@ -27,11 +29,13 @@ class TicTacToeViewModel : ViewModel() {
     fun playerMakesMove(positionInMoves: Int) {
         turn = Turn.COMPUTER
         _moves[positionInMoves] = Move.PLAYER
+        gameState = checkGameStatus()
     }
 
     fun computerMakesMove(positionInMoves: Int) {
         turn = Turn.PLAYER
         _moves[positionInMoves] = Move.COMPUTER
+        gameState = checkGameStatus()
     }
 
     fun resetGame() {
@@ -41,9 +45,11 @@ class TicTacToeViewModel : ViewModel() {
         for (i in 0..8) {
             _moves[i] = Move.NO_MOVE
         }
+
+        gameState = GameState.IN_PROGRESS
     }
 
-    fun getGameState(): GameState {
+    fun checkGameStatus(): GameState {
         return if ((moves[0] == Move.PLAYER && moves[1] == Move.PLAYER && moves[2] == Move.PLAYER) ||
             (moves[3] == Move.PLAYER && moves[4] == Move.PLAYER && moves[5] == Move.PLAYER) ||
             (moves[6] == Move.PLAYER && moves[7] == Move.PLAYER && moves[8] == Move.PLAYER) ||
