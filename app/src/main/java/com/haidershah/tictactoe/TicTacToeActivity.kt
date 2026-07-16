@@ -61,7 +61,7 @@ enum class GameState {
     DRAW,
 }
 
-class MainActivity : ComponentActivity() {
+class TicTacToeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -158,7 +158,7 @@ fun TicTacToeScreen(modifier: Modifier) {
 
         // game is finished
         if (gameState.value != GameState.IN_PROGRESS) {
-            Button(onClick = {
+            Button(modifier = Modifier.padding(16.dp), onClick = {
                 turn.value = Turn.PLAYER
                 gameState.value = GameState.IN_PROGRESS
                 // todo reset board
@@ -167,8 +167,7 @@ fun TicTacToeScreen(modifier: Modifier) {
                 }
             }) {
                 Text(
-                    text = stringResource(R.string.button_start_over),
-                    modifier = Modifier.padding(top = 16.dp)
+                    text = stringResource(R.string.button_start_over)
                 )
             }
         }
