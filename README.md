@@ -10,17 +10,16 @@ A native Android Tic-Tac-Toe game, built with Kotlin and Jetpack Compose.
 
 ## Status
 
-🚧 Early scaffold — the project currently has the base Compose activity set up, but the
-game board, turn logic, and win/draw detection haven't been implemented yet.
+✅ Playable — 3x3 board, turn-based play against the computer, win/draw detection, and a
+start-over flow are all implemented. Game state is held in `TicTacToeViewModel`.
 
 ## Roadmap
 
-- [ ] 3x3 game board UI
-- [ ] Turn-based X/O placement logic
-- [ ] Win and draw detection
-- [ ] Reset / play-again flow
-- [ ] Score tracker across rounds
-- [ ] Single-player mode vs. a simple AI opponent
+- [x] 3x3 game board UI
+- [x] Turn-based X/O placement logic
+- [x] Win and draw detection
+- [x] Reset / play-again flow
+- [ ] Smarter computer opponent (currently picks a random open square)
 
 ## Getting Started
 
