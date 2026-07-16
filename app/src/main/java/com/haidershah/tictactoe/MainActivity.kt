@@ -166,7 +166,10 @@ fun TicTacToeScreen(modifier: Modifier) {
                     moves[i] = Move.NO_MOVE
                 }
             }) {
-                Text(text = stringResource(R.string.button_start_over))
+                Text(
+                    text = stringResource(R.string.button_start_over),
+                    modifier = Modifier.padding(top = 16.dp)
+                )
             }
         }
     }
