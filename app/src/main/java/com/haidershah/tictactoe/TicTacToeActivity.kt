@@ -73,7 +73,7 @@ fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewMode
         Board(viewModel.moves, onTap)
 
         // computer's turn and game is in-progress
-        if (viewModel.turn == Turn.COMPUTER && viewModel.gameState == GameState.IN_PROGRESS) {
+        if (viewModel.isComputerTurnAndGameInProgress()) {
             CircularProgressIndicator(color = Color.Red, modifier = Modifier.padding(16.dp))
 
             val coroutineScope = rememberCoroutineScope()

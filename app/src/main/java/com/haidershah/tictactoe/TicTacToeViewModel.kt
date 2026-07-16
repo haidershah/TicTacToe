@@ -49,6 +49,8 @@ class TicTacToeViewModel : ViewModel() {
 
     fun isPlayerTurnAndGameInProgress() = turn == Turn.PLAYER && gameState == GameState.IN_PROGRESS
 
+    fun isComputerTurnAndGameInProgress() = turn == Turn.COMPUTER && gameState == GameState.IN_PROGRESS
+
     fun resetGame() {
         turn = Turn.PLAYER
 
