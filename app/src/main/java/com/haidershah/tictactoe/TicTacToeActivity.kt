@@ -87,7 +87,7 @@ fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewMode
             val positionInMoves = y * 3 + x
             if (positionInMoves in viewModel.moves.indices && viewModel.moves[positionInMoves] == Move.NO_MOVE) {
                 viewModel.playerMakesMove(positionInMoves)
-                gameState.value = getGameState(viewModel.moves)
+                gameState.value = viewModel.getGameState()
             }
         }
     }
@@ -113,7 +113,7 @@ fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewMode
                         val index = Random.nextInt(9)
                         if (viewModel.moves[index] == Move.NO_MOVE) {
                             viewModel.computerMakesMove(index)
-                            gameState.value = getGameState(viewModel.moves)
+                            gameState.value = viewModel.getGameState()
                             break
                         }
                     }
@@ -147,43 +147,6 @@ fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewMode
                     text = stringResource(R.string.button_start_over)
                 )
             }
-        }
-    }
-}
-
-fun getGameState(moves: List<Move>): GameState {
-    return if ((moves[0] == Move.PLAYER && moves[1] == Move.PLAYER && moves[2] == Move.PLAYER) ||
-        (moves[3] == Move.PLAYER && moves[4] == Move.PLAYER && moves[5] == Move.PLAYER) ||
-        (moves[6] == Move.PLAYER && moves[7] == Move.PLAYER && moves[8] == Move.PLAYER) ||
-        (moves[0] == Move.PLAYER && moves[3] == Move.PLAYER && moves[6] == Move.PLAYER) ||
-        (moves[1] == Move.PLAYER && moves[4] == Move.PLAYER && moves[7] == Move.PLAYER) ||
-        (moves[2] == Move.PLAYER && moves[5] == Move.PLAYER && moves[8] == Move.PLAYER) ||
-        (moves[0] == Move.PLAYER && moves[4] == Move.PLAYER && moves[8] == Move.PLAYER) ||
-        (moves[6] == Move.PLAYER && moves[4] == Move.PLAYER && moves[2] == Move.PLAYER)
-    ) {
-        GameState.PLAYER_WON
-    } else if ((moves[0] == Move.COMPUTER && moves[1] == Move.COMPUTER && moves[2] == Move.COMPUTER) ||
-        (moves[3] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[5] == Move.COMPUTER) ||
-        (moves[6] == Move.COMPUTER && moves[7] == Move.COMPUTER && moves[8] == Move.COMPUTER) ||
-        (moves[0] == Move.COMPUTER && moves[3] == Move.COMPUTER && moves[6] == Move.COMPUTER) ||
-        (moves[1] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[7] == Move.COMPUTER) ||
-        (moves[2] == Move.COMPUTER && moves[5] == Move.COMPUTER && moves[8] == Move.COMPUTER) ||
-        (moves[0] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[8] == Move.COMPUTER) ||
-        (moves[6] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[2] == Move.COMPUTER)
-    ) {
-        GameState.COMPUTER_WON
-    } else {
-        var isMoveAvailable = false
-        for (i in 0..8) {
-            if (moves[i] == Move.NO_MOVE) {
-                isMoveAvailable = true
-                break
-            }
-        }
-        if (isMoveAvailable) {
-            GameState.IN_PROGRESS
-        } else {
-            GameState.DRAW
         }
     }
 }

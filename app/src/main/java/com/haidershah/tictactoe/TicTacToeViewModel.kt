@@ -42,4 +42,41 @@ class TicTacToeViewModel : ViewModel() {
             _moves[i] = Move.NO_MOVE
         }
     }
+
+    fun getGameState(): GameState {
+        return if ((moves[0] == Move.PLAYER && moves[1] == Move.PLAYER && moves[2] == Move.PLAYER) ||
+            (moves[3] == Move.PLAYER && moves[4] == Move.PLAYER && moves[5] == Move.PLAYER) ||
+            (moves[6] == Move.PLAYER && moves[7] == Move.PLAYER && moves[8] == Move.PLAYER) ||
+            (moves[0] == Move.PLAYER && moves[3] == Move.PLAYER && moves[6] == Move.PLAYER) ||
+            (moves[1] == Move.PLAYER && moves[4] == Move.PLAYER && moves[7] == Move.PLAYER) ||
+            (moves[2] == Move.PLAYER && moves[5] == Move.PLAYER && moves[8] == Move.PLAYER) ||
+            (moves[0] == Move.PLAYER && moves[4] == Move.PLAYER && moves[8] == Move.PLAYER) ||
+            (moves[6] == Move.PLAYER && moves[4] == Move.PLAYER && moves[2] == Move.PLAYER)
+        ) {
+            GameState.PLAYER_WON
+        } else if ((moves[0] == Move.COMPUTER && moves[1] == Move.COMPUTER && moves[2] == Move.COMPUTER) ||
+            (moves[3] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[5] == Move.COMPUTER) ||
+            (moves[6] == Move.COMPUTER && moves[7] == Move.COMPUTER && moves[8] == Move.COMPUTER) ||
+            (moves[0] == Move.COMPUTER && moves[3] == Move.COMPUTER && moves[6] == Move.COMPUTER) ||
+            (moves[1] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[7] == Move.COMPUTER) ||
+            (moves[2] == Move.COMPUTER && moves[5] == Move.COMPUTER && moves[8] == Move.COMPUTER) ||
+            (moves[0] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[8] == Move.COMPUTER) ||
+            (moves[6] == Move.COMPUTER && moves[4] == Move.COMPUTER && moves[2] == Move.COMPUTER)
+        ) {
+            GameState.COMPUTER_WON
+        } else {
+            var isMoveAvailable = false
+            for (i in 0..8) {
+                if (moves[i] == Move.NO_MOVE) {
+                    isMoveAvailable = true
+                    break
+                }
+            }
+            if (isMoveAvailable) {
+                GameState.IN_PROGRESS
+            } else {
+                GameState.DRAW
+            }
+        }
+    }
 }
