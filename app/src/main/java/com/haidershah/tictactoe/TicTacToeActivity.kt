@@ -60,13 +60,7 @@ class TicTacToeActivity : ComponentActivity() {
 @Composable
 fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewModel()) {
     val onTap: (Int, Int) -> Unit = { x, y ->
-        // player's turn and game is in-progress
-        if (viewModel.isPlayerTurnAndGameInProgress()) {
-            val positionInMoves = y * 3 + x
-            if (positionInMoves in viewModel.moves.indices && viewModel.moves[positionInMoves] == Move.NO_MOVE) {
-                viewModel.playerMakesMove(positionInMoves)
-            }
-        }
+        viewModel.playerTappedOnBoard(x, y)
     }
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {

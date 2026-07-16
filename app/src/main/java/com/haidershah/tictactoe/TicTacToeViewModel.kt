@@ -38,6 +38,15 @@ class TicTacToeViewModel : ViewModel() {
         gameState = checkGameStatus()
     }
 
+    fun playerTappedOnBoard(x: Int, y: Int) {
+        if (isPlayerTurnAndGameInProgress()) {
+            val positionInMoves = y * 3 + x
+            if (positionInMoves in moves.indices && moves[positionInMoves] == Move.NO_MOVE) {
+                playerMakesMove(positionInMoves)
+            }
+        }
+    }
+
     fun isPlayerTurnAndGameInProgress() = turn == Turn.PLAYER && gameState == GameState.IN_PROGRESS
 
     fun resetGame() {
