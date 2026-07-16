@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.haidershah.tictactoe.ui.theme.TicTacToeTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -78,7 +79,7 @@ class TicTacToeActivity : ComponentActivity() {
 }
 
 @Composable
-fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = TicTacToeViewModel()) {
+fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewModel()) {
     val moves =
         remember {
             mutableStateListOf(
