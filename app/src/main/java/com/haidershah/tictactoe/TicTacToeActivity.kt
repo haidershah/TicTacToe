@@ -61,7 +61,7 @@ class TicTacToeActivity : ComponentActivity() {
 fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewModel()) {
     val onTap: (Int, Int) -> Unit = { x, y ->
         // player's turn and game is in-progress
-        if (viewModel.turn == Turn.PLAYER && viewModel.gameState == GameState.IN_PROGRESS) {
+        if (viewModel.isPlayerTurnAndGameInProgress()) {
             val positionInMoves = y * 3 + x
             if (positionInMoves in viewModel.moves.indices && viewModel.moves[positionInMoves] == Move.NO_MOVE) {
                 viewModel.playerMakesMove(positionInMoves)
