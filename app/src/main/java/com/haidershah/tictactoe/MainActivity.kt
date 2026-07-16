@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -153,6 +154,20 @@ fun TicTacToeScreen(modifier: Modifier) {
             GameState.DRAW -> Text(text = stringResource(R.string.message_draw), fontSize = 30.sp)
 
             GameState.IN_PROGRESS -> {}
+        }
+
+        // game is finished
+        if (gameState.value != GameState.IN_PROGRESS) {
+            Button(onClick = {
+                turn.value = Turn.PLAYER
+                gameState.value = GameState.IN_PROGRESS
+                // todo reset board
+                for (i in 0..8) {
+                    moves[i] = Move.NO_MOVE
+                }
+            }) {
+                Text(text = stringResource(R.string.button_start_over))
+            }
         }
     }
 }
