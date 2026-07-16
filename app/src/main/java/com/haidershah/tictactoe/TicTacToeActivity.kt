@@ -78,9 +78,7 @@ class TicTacToeActivity : ComponentActivity() {
 }
 
 @Composable
-fun TicTacToeScreen(modifier: Modifier) {
-    val turn = remember { mutableStateOf(Turn.PLAYER) }
-
+fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = TicTacToeViewModel()) {
     val moves =
         remember {
             mutableStateListOf(
@@ -100,11 +98,11 @@ fun TicTacToeScreen(modifier: Modifier) {
 
     val onTap: (Int, Int) -> Unit = { x, y ->
         // player's turn and game is in-progress
-        if (turn.value == Turn.PLAYER && gameState.value == GameState.IN_PROGRESS) {
+        if (viewModel.turn == Turn.PLAYER && gameState.value == GameState.IN_PROGRESS) {
             val positionInMoves = y * 3 + x
             if (positionInMoves in moves.indices && moves[positionInMoves] == Move.NO_MOVE) {
+                viewModel.playerMakesMove()
                 moves[positionInMoves] = Move.PLAYER
-                turn.value = Turn.COMPUTER
                 gameState.value = getGameState(moves)
             }
         }
@@ -116,11 +114,11 @@ fun TicTacToeScreen(modifier: Modifier) {
             fontSize = 30.sp,
             modifier = Modifier.padding(16.dp)
         )
-        Header(turn.value)
+        Header(viewModel.turn)
         Board(moves, onTap)
 
         // computer's turn and game is in-progress
-        if (turn.value == Turn.COMPUTER && gameState.value == GameState.IN_PROGRESS) {
+        if (viewModel.turn == Turn.COMPUTER && gameState.value == GameState.IN_PROGRESS) {
             CircularProgressIndicator(color = Color.Red, modifier = Modifier.padding(16.dp))
 
             val coroutineScope = rememberCoroutineScope()
@@ -130,8 +128,8 @@ fun TicTacToeScreen(modifier: Modifier) {
                     while (true) {
                         val index = Random.nextInt(9)
                         if (moves[index] == Move.NO_MOVE) {
+                            viewModel.computerMakesMove()
                             moves[index] = Move.COMPUTER
-                            turn.value = Turn.PLAYER
                             gameState.value = getGameState(moves)
                             break
                         }
@@ -159,7 +157,7 @@ fun TicTacToeScreen(modifier: Modifier) {
         // game is finished
         if (gameState.value != GameState.IN_PROGRESS) {
             Button(modifier = Modifier.padding(16.dp), onClick = {
-                turn.value = Turn.PLAYER
+                viewModel.resetGame()
                 gameState.value = GameState.IN_PROGRESS
                 // todo reset board
                 for (i in 0..8) {
