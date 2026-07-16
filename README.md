@@ -2,6 +2,14 @@
 
 A native Android Tic-Tac-Toe game, built with Kotlin and Jetpack Compose.
 
+## Screenshots
+
+<p>
+  <img src="screenshots/gameplay.png" width="250" alt="Gameplay in progress" />
+  <img src="screenshots/player-won.png" width="250" alt="Player won" />
+  <img src="screenshots/computer-won.png" width="250" alt="Computer won" />
+</p>
+
 ## Tech Stack
 
 - **Language:** Kotlin
