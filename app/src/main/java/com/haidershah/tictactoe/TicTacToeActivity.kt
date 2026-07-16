@@ -94,7 +94,7 @@ fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewMode
         when (viewModel.gameState) {
             GameState.PLAYER_WON -> Text(
                 text = stringResource(R.string.message_player_won),
-                fontSize = 25.sp
+                fontSize = 30.sp
             )
 
             GameState.COMPUTER_WON -> Text(
