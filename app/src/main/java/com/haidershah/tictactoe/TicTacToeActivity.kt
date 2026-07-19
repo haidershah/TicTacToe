@@ -20,8 +20,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,7 +52,10 @@ class TicTacToeActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TicTacToeTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = { TicTacToeTopAppBar() }
+                ) { innerPadding ->
                     TicTacToeScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -57,18 +65,29 @@ class TicTacToeActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TicTacToeTopAppBar() {
+    TopAppBar(
+        title = { Text(stringResource(R.string.title_tic_tac_toe)) },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                3.dp
+            )
+        )
+    )
+}
+
 @Composable
 fun TicTacToeScreen(modifier: Modifier, viewModel: TicTacToeViewModel = viewModel()) {
     val onTap: (Int, Int) -> Unit = { x, y ->
         viewModel.playerTappedOnBoard(x, y)
     }
 
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = stringResource(R.string.title_tic_tac_toe),
-            fontSize = 30.sp,
-            modifier = Modifier.padding(16.dp)
-        )
+    Column(
+        modifier = modifier.padding(top = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Header(viewModel.turn)
         Board(viewModel.moves, onTap)
 
